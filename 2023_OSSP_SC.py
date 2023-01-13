@@ -10,7 +10,7 @@ import glob
 # numpy: 행렬이나 다차원 배열을 쉽게 처리할 수 있도록 지원하는 라이브러리
 import numpy as np
 # sklearn.model_selection: 기계 학습 모델 및 통계 모델링을 구현하기 위한 Python 도구 키트
-# train_test_split: 데이터를 training set과 test set으로 나눔
+# train_test_split: 데이터를 training data set과 test data set으로 나눔
 from sklearn.model_selection import train_test_split
 # keras: 오픈소스 신경망 라이브러리
 # Sequential: 순차적으로 레이러를 쌓아주는 케라스 라이브러리
@@ -31,15 +31,19 @@ data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data/Train
 # training set class 설정 (categories 리스트는 최종 결과를 반환할 때 사용)
 categories = ["Coca", "Sprite", "Pocari"]
 # 카테고리 갯수: 3개
+# nb_classes 분류될 클래스를 개수 만큼 변수에 저장
 nb_classes = len(categories)
+
 
 # 이미지 전처리 1
 # 이미지의 크기를 모두 통일
 image_w = 64
 image_h = 64
 
+# pixels은 rgb 값이 모두 들어가니 3을 곱해주기
 pixels = image_h * image_w * 3
 
+# X, Y는 데이터와 라벨을 저장하기 위해 만드는 배열
 X = []
 y = []
 
@@ -48,12 +52,16 @@ y = []
 for idx, cat in enumerate(categories):
 
     # one-hot encoding
+    # i = range(nb_classes)
     label = [0 for i in range(nb_classes)]
     label[idx] = 1
 
+    # training set 클래스 별로 주소 지정
     image_dir = data_dir + "/" + cat
+    # 이미지 리스티 뽑아오기
     files = glob.glob(image_dir + "/*.png")
     print(cat, " 파일 길이 : ", len(files))
+'''
     for i, f in enumerate(files):
         img = Image.open(f)
         img = img.convert("RGB")
@@ -187,3 +195,4 @@ for i in prediction:
     if i[1] >= 0.8: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"으로 추정됩니다.")
     if i[2] >= 0.8: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"로 추정됩니다.")
     cnt += 1
+'''
