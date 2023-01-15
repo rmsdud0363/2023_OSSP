@@ -39,9 +39,6 @@ nb_classes = len(categories)
 image_w = 64
 image_h = 64
 
-# pixels은 rgb 값이 모두 들어가니 3을 곱해주기
-pixels = image_h * image_w * 3
-
 # X, Y는 데이터와 라벨을 저장하기 위해 만든 리스트
 X = []
 Y = []
@@ -75,7 +72,7 @@ for idx, cat in enumerate(categories):
         # Numpy 배열 데이터로 변환
         # np.asarray(): PIL Image를 NumPy array로 변환해주는 함수
         data = np.asarray(img)
-
+        print('data', data)
         # X 리스트에 data 정보를 요소로 추가
         X.append(data)
         # Y 리스트에 label 정보를 요소로 추가
@@ -87,17 +84,21 @@ for idx, cat in enumerate(categories):
 # 리스트 X, Y를 배열로 변환 후 저장
 X = np.array(X, dtype=int)
 Y = np.array(Y, dtype=int)
-
+'''
 # 데이터 불러오기
 # data set을 순차적으로 training data set과 test data set으로 분할
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 xy = (X_train, X_test, Y_train, Y_test)
 
-
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", xy)
-
+"""
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", X_train)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", X_test)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", Y_train)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", Y_test)
+"""
 print("ok", len(Y))
-'''
+
 
 config = tf.compat.v1.ConfigProto()
 """
@@ -174,8 +175,6 @@ from keras.models import load_model
 caltech_dir = "C:/Users/taemin/PycharmProjects/What-sYourMerchandise/DataSet/Test"
 image_w = 64
 image_h = 64
-
-pixels = image_h * image_w * 3
 
 X = []
 filenames = []
