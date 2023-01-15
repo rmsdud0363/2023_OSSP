@@ -27,9 +27,9 @@ import tensorflow as tf
 
 # 이미지 경로 및 변수 지정
 # data set 불러오기
-data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data'
+data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_DataSet/Train'
 # data set category 설정 (categories 리스트는 최종 결과를 반환할 때 사용)
-categories = ["Coca", "Pocari", "Sprite"]
+categories = ["Coca", "Fanta", "Sprite"]
 # data set에 category 개수(길이)를 nb_classes에 저장
 nb_classes = len(categories)
 
@@ -72,40 +72,33 @@ for idx, cat in enumerate(categories):
         # Numpy 배열 데이터로 변환
         # np.asarray(): PIL Image를 NumPy array로 변환해주는 함수
         data = np.asarray(img)
-        print('data', data)
         # X 리스트에 data 정보를 요소로 추가
         X.append(data)
         # Y 리스트에 label 정보를 요소로 추가
         Y.append(label)
 
-        if i % 700 == 0:
-            print(cat, " : ", f)
-
 # 리스트 X, Y를 배열로 변환 후 저장
 X = np.array(X, dtype=int)
 Y = np.array(Y, dtype=int)
-'''
+
 # 데이터 불러오기
 # data set을 순차적으로 training data set과 test data set으로 분할
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
-xy = (X_train, X_test, Y_train, Y_test)
 
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", xy)
-"""
+# 분할한 data set을 바이너리 파일로 저장
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", X_train)
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", X_test)
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", Y_train)
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", Y_test)
-"""
-print("ok", len(Y))
 
-
+# ConfigProto(): 연산방식을 설정하는 기능의 함수
 config = tf.compat.v1.ConfigProto()
 """
     config  :   
                 tensorflow 2.x 버전 업데이트 이후 
                 tf.ConfigProto() -> tf.compat.v1.ConfigProto()
 """
+
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 """
@@ -119,6 +112,7 @@ X_train, X_test, y_train, y_test = np.load('C:/Users/taemin/PycharmProjects/What
 print(X_train.shape)
 print(X_train.shape[0])
 
+'''
 categories = ["Cocacola", "sevenstar", "sprite"]
 nb_classes = len(categories)
 
