@@ -29,8 +29,8 @@ import tensorflow as tf
 # data set 불러오기
 data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data'
 # data set category 설정 (categories 리스트는 최종 결과를 반환할 때 사용)
-categories = ["Coca", "Sprite", "Pocari"]
-# data set에서 분류될 category 개수(길이)를 nb_classes에 저장
+categories = ["Coca", "Pocari", "Sprite"]
+# data set에 category 개수(길이)를 nb_classes에 저장
 nb_classes = len(categories)
 
 
@@ -42,13 +42,13 @@ image_h = 64
 # pixels은 rgb 값이 모두 들어가니 3을 곱해주기
 pixels = image_h * image_w * 3
 
-# X, Y는 데이터와 라벨을 저장하기 위해 만드는 배열
+# X, Y는 데이터와 라벨을 저장하기 위해 만든 리스트
 X = []
-y = []
+Y = []
 
 # 이미지 전처리 2
-# 경로에서 이미지를 불러와 일일이 리사이징
-# for idx, cat in enumerate(): 순서가 있는 자료형을 입력으로 받아 인덱스 값을 포함하는 튜플을 만들어줌
+# 경로에서 불러 온 이미지를 일일이 리사이징
+# for idx, cat in enumerate(): 순서가 있는 자료형을 입력으로 받아 인덱스 값을 포함하는 튜플로 만들어줌
 # idx = 인덱스 값/ 0부터 시작, cat = categories 리스트 원소
 for idx, cat in enumerate(categories):
 
@@ -58,17 +58,17 @@ for idx, cat in enumerate(categories):
     label = [0 for i in range(nb_classes)]
     label[idx] = 1
 
-    # data set category별 image 주소 지정
+    # data set category 별 image 경로 지정
     image_dir = data_dir + "/" + cat
-    # '.png'인 이미지 리스트 뽑아오기
+    # '.png'인 이미지만 리스트로 뽑아오기
     files = glob.glob(image_dir + "/*.png")
-    # category별 파일길이 출력하여 확인
+    # category 별 파일 길이 출력하여 확인
     print(cat, " 파일 길이 : ", len(files))
 
     for i, f in enumerate(files):
         # Image.open(f: 이미지 파일의 경로): 이미지 파일 열기
         img = Image.open(f)
-        # img.convert("RGB"): 열린 이미지 파일 RGB로 변환
+        # img.convert("RGB"): 열어 놓은 이미지 파일을 RGB로 변환
         img = img.convert("RGB")
         # img.resize((image_w, image_h)): 64x64 픽셀로 리사이즈
         img = img.resize((image_w, image_h))
@@ -76,24 +76,28 @@ for idx, cat in enumerate(categories):
         # np.asarray(): PIL Image를 NumPy array로 변환해주는 함수
         data = np.asarray(img)
 
-        # X 리스트에 data 요소를 추가
+        # X 리스트에 data 정보를 요소로 추가
         X.append(data)
-        # Y 리스트에 label 요소를 추가
-        y.append(label)
+        # Y 리스트에 label 정보를 요소로 추가
+        Y.append(label)
 
         if i % 700 == 0:
             print(cat, " : ", f)
-'''
-# test set와 training set으로 나누고 일반화
-X = np.array(X)
-y = np.array(y)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y)
-xy = (X_train, X_test, y_train, y_test)
+# 리스트 X, Y를 배열로 변환 후 저장
+X = np.array(X, dtype=int)
+Y = np.array(Y, dtype=int)
+
+# 데이터 불러오기
+# data set을 순차적으로 training data set과 test data set으로 분할
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
+xy = (X_train, X_test, Y_train, Y_test)
+
+
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", xy)
 
-print("ok", len(y))
-
+print("ok", len(Y))
+'''
 
 config = tf.compat.v1.ConfigProto()
 """
