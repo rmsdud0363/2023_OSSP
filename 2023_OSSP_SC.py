@@ -13,25 +13,24 @@ import numpy as np
 # train_test_split: 데이터를 training data set과 test data set으로 나눔
 from sklearn.model_selection import train_test_split
 # keras: 오픈소스 신경망 라이브러리
-# Sequential: 순차적으로 레이러를 쌓아주는 케라스 라이브러리
+# Sequential: 순차적으로 레이어를 쌓아주는 케라스 라이브러리
 from keras.models import Sequential
 # Conv2D, MaxPooling2D, Dense, Flatten, Dropout: 신경망 층을 쌓기 위한 라이브러리
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
 # EarlyStopping: 모델이 더 이상 학습을 못할 경우, 학습 도중 미리 학습을 종료시키는 콜백함수
 # ModelCheckpoint: 모델을 저장할 때 사용되는 콜백함수
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-# matplotlib: 여러 가지 그래프를 그려주는 함수들이 들어있는 라이브러리
+# matplotlib: 여러 가지 그래프를 그릴 수 있는 함수들이 들어있는 라이브러리
 import matplotlib.pyplot as plt
-# tensorflow: 수치 계산과 대규모 머신러닝을 위한 오픈소스 라이브러리
+# tensorflow: 머신러닝을 위한 오픈소스 라이브러리
 import tensorflow as tf
 
 # 이미지 경로 및 변수 지정
-# training set 불러오기
-data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data/Train Set'
-# training set class 설정 (categories 리스트는 최종 결과를 반환할 때 사용)
+# data set 불러오기
+data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data'
+# data set category 설정 (categories 리스트는 최종 결과를 반환할 때 사용)
 categories = ["Coca", "Sprite", "Pocari"]
-# 카테고리 갯수: 3개
-# nb_classes 분류될 클래스를 개수 만큼 변수에 저장
+# data set에서 분류될 category 개수(길이)를 nb_classes에 저장
 nb_classes = len(categories)
 
 
@@ -49,31 +48,42 @@ y = []
 
 # 이미지 전처리 2
 # 경로에서 이미지를 불러와 일일이 리사이징
+# for idx, cat in enumerate(): 순서가 있는 자료형을 입력으로 받아 인덱스 값을 포함하는 튜플을 만들어줌
+# idx = 인덱스 값/ 0부터 시작, cat = categories 리스트 원소
 for idx, cat in enumerate(categories):
 
     # one-hot encoding
     # i = range(nb_classes)
+    # range(nb_classes)로 설정하여 data set category의 수가 변경되어도 상관이 없음
     label = [0 for i in range(nb_classes)]
     label[idx] = 1
 
-    # training set 클래스 별로 주소 지정
+    # data set category별 image 주소 지정
     image_dir = data_dir + "/" + cat
-    # 이미지 리스티 뽑아오기
+    # '.png'인 이미지 리스트 뽑아오기
     files = glob.glob(image_dir + "/*.png")
+    # category별 파일길이 출력하여 확인
     print(cat, " 파일 길이 : ", len(files))
-'''
+
     for i, f in enumerate(files):
+        # Image.open(f: 이미지 파일의 경로): 이미지 파일 열기
         img = Image.open(f)
+        # img.convert("RGB"): 열린 이미지 파일 RGB로 변환
         img = img.convert("RGB")
+        # img.resize((image_w, image_h)): 64x64 픽셀로 리사이즈
         img = img.resize((image_w, image_h))
+        # Numpy 배열 데이터로 변환
+        # np.asarray(): PIL Image를 NumPy array로 변환해주는 함수
         data = np.asarray(img)
 
+        # X 리스트에 data 요소를 추가
         X.append(data)
+        # Y 리스트에 label 요소를 추가
         y.append(label)
 
         if i % 700 == 0:
             print(cat, " : ", f)
-
+'''
 # test set와 training set으로 나누고 일반화
 X = np.array(X)
 y = np.array(y)
