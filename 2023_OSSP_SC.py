@@ -86,10 +86,10 @@ Y = np.array(Y, dtype=int)
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 
 # 분할한 data set을 바이너리 파일로 저장
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", X_train)
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", X_test)
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", Y_train)
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/multi_image_data.npy", Y_test)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_train.npy", X_train)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_test.npy", X_test)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_train.npy", Y_train)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_test.npy", Y_test)
 
 # ConfigProto(): 연산방식을 설정하는 기능의 함수
 config = tf.compat.v1.ConfigProto()
@@ -108,13 +108,13 @@ session = tf.compat.v1.Session(config=config)
 """
 
 
-X_train, X_test, y_train, y_test = np.load('C:/Users/taemin/PycharmProjects/What-sYourMerchandise/multi_image_data.npy')
+X_train = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_train.npy")
+X_test = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_test.npy")
+Y_train = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_train.npy")
+Y_test = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_test.npy")
 print(X_train.shape)
 print(X_train.shape[0])
 
-'''
-categories = ["Cocacola", "sevenstar", "sprite"]
-nb_classes = len(categories)
 
 #일반화
 X_train = X_train.astype(float) / 255
@@ -145,34 +145,33 @@ early_stopping = EarlyStopping(monitor='val_loss', patience=6)
 
 model.summary()
 
-history = model.fit(X_train, y_train, batch_size=32, epochs=50, validation_data=(X_test, y_test), callbacks=[checkpoint, early_stopping])
+history = model.fit(X_train, Y_train, batch_size=32, epochs=50, validation_data=(X_test, Y_test), callbacks=[checkpoint, early_stopping])
 
-print("정확도 : %.4f" % (model.evaluate(X_test, y_test)[1]))
+print("정확도 : %.4f" % (model.evaluate(X_test, Y_test)[1]))
 
-y_vloss = history.history['val_loss']
-y_loss = history.history['loss']
 
-x_len = np.arange(len(y_loss))
+Y_vloss = history.history['val_loss']
+Y_loss = history.history['loss']
 
-plt.plot(x_len, y_vloss, marker='.', c='red', label='val_set_loss')
-plt.plot(x_len, y_loss, marker='.', c='blue', label='train_set_oss')
+x_len = np.arange(len(Y_loss))
+
+plt.plot(x_len, Y_vloss, marker='.', c='red', label='val_set_loss')
+plt.plot(x_len, Y_loss, marker='.', c='blue', label='train_set_oss')
 plt.legend()
 plt.xlabel('epochs')
 plt.ylabel('loss')
 plt.grid()
 plt.show()
 
-from PIL import Image
-import os, glob, numpy as np
 from keras.models import load_model
 
-caltech_dir = "C:/Users/taemin/PycharmProjects/What-sYourMerchandise/DataSet/Test"
+data_dir = "C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_DataSet/Test"
 image_w = 64
 image_h = 64
 
 X = []
 filenames = []
-files = glob.glob(caltech_dir+"/*.*")
+files = glob.glob(data_dir+"/*.*")
 for i, f in enumerate(files):
     img = Image.open(f)
     img = img.convert("RGB")
@@ -195,11 +194,10 @@ for i in prediction:
     print(pre_ans)
     pre_ans_str = ''
     if pre_ans == 0: pre_ans_str = "코카콜라"
-    elif pre_ans == 1: pre_ans_str = "칠성사이다"
+    elif pre_ans == 1: pre_ans_str = "환타"
     elif pre_ans == 2: pre_ans_str = "스프라이트"
     else: pre_ans_str = "게"
     if i[0] >= 0.8 : print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"로 추정됩니다.")
     if i[1] >= 0.8: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"으로 추정됩니다.")
     if i[2] >= 0.8: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"로 추정됩니다.")
     cnt += 1
-'''
