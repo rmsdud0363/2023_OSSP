@@ -24,6 +24,8 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 import matplotlib.pyplot as plt
 # tensorflow: 머신러닝을 위한 오픈소스 라이브러리
 import tensorflow as tf
+import absl.logging
+absl.logging.set_verbosity(absl.logging.ERROR)
 
 # 이미지 경로 및 변수 지정
 # data set 불러오기
@@ -59,7 +61,6 @@ for idx, cat in enumerate(categories):
     # '.png'인 이미지만 리스트로 뽑아오기
     files = glob.glob(image_dir + "/*.jpg")
     # category 별 파일 길이 출력하여 확인
-    print(cat, " 파일 길이 : ", len(files))
 
     for i, f in enumerate(files):
         # Image.open(f: 이미지 파일의 경로): 이미지 파일 열기
@@ -87,20 +88,19 @@ Y = np.array(Y)
 # data set을 순차적으로 training data set과 test data set으로 분할
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 
+
 # 분할한 data set을 바이너리 파일로 저장
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_train.npy", X_train)
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_test.npy", X_test)
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_train.npy", Y_train)
 np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_test.npy", Y_test)
 
-# ConfigProto(): 연산방식을 설정하는 기능의 함수
 config = tf.compat.v1.ConfigProto()
 """
     config  :   
                 tensorflow 2.x 버전 업데이트 이후 
                 tf.ConfigProto() -> tf.compat.v1.ConfigProto()
 """
-
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
 """
@@ -108,7 +108,6 @@ session = tf.compat.v1.Session(config=config)
                 tensorflow 2.x 버전 업데이트 이후 
                 tf.session() -> tf.compat.v1.session()
 """
-
 
 X_train = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_train.npy")
 X_test = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_test.npy")
@@ -158,7 +157,7 @@ Y_loss = history.history['loss']
 x_len = np.arange(len(Y_loss))
 
 plt.plot(x_len, Y_vloss, marker='.', c='red', label='val_set_loss')
-plt.plot(x_len, Y_loss, marker='.', c='blue', label='train_set_oss')
+plt.plot(x_len, Y_loss, marker='.', c='blue', label='train_set_loss')
 plt.legend()
 plt.xlabel('epochs')
 plt.ylabel('loss')
@@ -167,13 +166,13 @@ plt.show()
 
 from keras.models import load_model
 
-data_dir = "C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_DataSet/Test"
+data_dir = "C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data/Test"
 image_w = 64
 image_h = 64
 
 X = []
 filenames = []
-files = glob.glob(data_dir+"/*.*")
+files = glob.glob(image_dir+"/*.jpg")
 for i, f in enumerate(files):
     img = Image.open(f)
     img = img.convert("RGB")
@@ -189,7 +188,6 @@ prediction = model.predict(X)
 np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 cnt = 0
 
-
 for i in prediction:
     pre_ans = i.argmax()  # 예측 레이블
     print(i)
@@ -197,9 +195,16 @@ for i in prediction:
     pre_ans_str = ''
     if pre_ans == 0: pre_ans_str = "코카콜라"
     elif pre_ans == 1: pre_ans_str = "환타"
-    elif pre_ans == 2: pre_ans_str = "스프라이트"
+    elif pre_ans == 2: pre_ans_str = "레쓰비"
+    elif pre_ans == 3: pre_ans_str = "포카리"
+    elif pre_ans == 4: pre_ans_str = "스프라이트"
+    elif pre_ans == 5: pre_ans_str = "데자와"
+
     else: pre_ans_str = "게"
-    if i[0] >= 0.8 : print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"로 추정됩니다.")
+    if i[0] >= 0.8: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"로 추정됩니다.")
     if i[1] >= 0.8: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"으로 추정됩니다.")
     if i[2] >= 0.8: print("해당 "+filenames[cnt].split("\\")[1]+"이미지는 "+pre_ans_str+"로 추정됩니다.")
+    if i[3] >= 0.8: print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "로 추정됩니다.")
+    if i[4] >= 0.8: print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "로 추정됩니다.")
+    if i[5] >= 0.8: print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "로 추정됩니다.")
     cnt += 1

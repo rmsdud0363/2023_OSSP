@@ -152,7 +152,7 @@ print("np.save end<<<<<<<<<<<<<<<<<<<<<<<")
 # np.save =====================================================================
 
 
-'''
+
 # 잘 저장되어 있는지 확인
 # np.load =====================================================================
 print("np.load start>>>>>>>>>>>>>>>>>>")
@@ -193,4 +193,3 @@ print(std_data_cocacola.shape)   # (209, 64, 64, 3)
 print(std_label_cocacola.shape)  # (209,)
 print(dif_data_cocacola.shape)   # (210, 64, 64, 3)
 print(dif_label_cocacola.shape)  # (210,)
-'''
