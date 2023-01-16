@@ -27,12 +27,11 @@ import tensorflow as tf
 
 # 이미지 경로 및 변수 지정
 # data set 불러오기
-data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_DataSet/Train'
+data_dir = 'C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data/Train'
 # data set category 설정 (categories 리스트는 최종 결과를 반환할 때 사용)
-categories = ["Coca", "Fanta", "Sprite"]
+categories = ['coca', 'fanta', 'letsbee', 'pocari', 'sprite', 'tejava']
 # data set에 category 개수(길이)를 nb_classes에 저장
 nb_classes = len(categories)
-
 
 # 이미지 전처리 1
 # 이미지의 크기를 모두 통일
@@ -58,7 +57,7 @@ for idx, cat in enumerate(categories):
     # data set category 별 image 경로 지정
     image_dir = data_dir + "/" + cat
     # '.png'인 이미지만 리스트로 뽑아오기
-    files = glob.glob(image_dir + "/*.png")
+    files = glob.glob(image_dir + "/*.jpg")
     # category 별 파일 길이 출력하여 확인
     print(cat, " 파일 길이 : ", len(files))
 
@@ -77,9 +76,12 @@ for idx, cat in enumerate(categories):
         # Y 리스트에 label 정보를 요소로 추가
         Y.append(label)
 
+        if i % 700 == 0:
+            print(cat, " : ", f)
+
 # 리스트 X, Y를 배열로 변환 후 저장
-X = np.array(X, dtype=int)
-Y = np.array(Y, dtype=int)
+X = np.array(X)
+Y = np.array(Y)
 
 # 데이터 불러오기
 # data set을 순차적으로 training data set과 test data set으로 분할
