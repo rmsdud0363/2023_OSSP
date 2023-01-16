@@ -1,4 +1,4 @@
-# 2023_OSSP_SourceCode
+# 2023_OSSP_Test
 
 # 라이브러리 import
 # PIL: Python Imaging Library
