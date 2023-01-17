@@ -35,7 +35,6 @@ categories = ['coca', 'fanta', 'letsbee', 'pocari', 'sprite', 'tejava']
 # data set에 category 개수(길이)를 nb_classes에 저장
 nb_classes = len(categories)
 
-# 이미지 전처리 1
 # 이미지의 크기를 모두 통일
 image_w = 64
 image_h = 64
@@ -44,7 +43,7 @@ image_h = 64
 X = []
 Y = []
 
-# 이미지 전처리 2
+# 이미지 전처리 1
 # 경로에서 불러 온 이미지를 일일이 리사이징
 # for idx, cat in enumerate(): 순서가 있는 자료형을 입력으로 받아 인덱스 값을 포함하는 튜플로 만들어줌
 # idx = 인덱스 값/ 0부터 시작, cat = categories 리스트 원소
@@ -86,41 +85,42 @@ Y = np.array(Y)
 
 # 데이터 불러오기
 # data set을 순차적으로 training data set과 test data set으로 분할
+# validation_data=(X_test, Y_test)
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
 
+# data set 배열을 npy 파일로 저장
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/X_train.npy", X_train)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/X_test.npy", X_test)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/Y_train.npy", Y_train)
+np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/Y_test.npy", Y_test)
 
-# 분할한 data set을 바이너리 파일로 저장
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_train.npy", X_train)
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_test.npy", X_test)
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_train.npy", Y_train)
-np.save("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_test.npy", Y_test)
-
+# ConfigProto: 연산 방식(CPU/GPU)을 설정하는 기능의 함수
 config = tf.compat.v1.ConfigProto()
-"""
-    config  :   
-                tensorflow 2.x 버전 업데이트 이후 
-                tf.ConfigProto() -> tf.compat.v1.ConfigProto()
-"""
+
+# GPU 메모리 관리
 config.gpu_options.allow_growth = True
 session = tf.compat.v1.Session(config=config)
-"""
-    session  :   
-                tensorflow 2.x 버전 업데이트 이후 
-                tf.session() -> tf.compat.v1.session()
-"""
 
-X_train = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_train.npy")
-X_test = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/X_test.npy")
-Y_train = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_train.npy")
-Y_test = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/Y_test.npy")
+# npy 파일을 로드
+X_train = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/X_train.npy")
+X_test = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/X_test.npy")
+Y_train = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/Y_train.npy")
+Y_test = np.load("C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/NPY_File/Y_test.npy")
+
 print(X_train.shape)
 print(X_train.shape[0])
 
+# test set category 설정
+categories = ['coca_T', 'fanta_T', 'letsbee_T', 'pocari_T', 'sprite_T', 'tejava_T']
+nb_classes = len(categories)
 
 #일반화
 X_train = X_train.astype(float) / 255
 X_test = X_test.astype(float) / 255
 
+# 순차적으로 모델을 쌓기
+
+# 합성곱 신경망 구성
 model = Sequential()
 model.add(Conv2D(32, (3,3), padding="same", input_shape=X_train.shape[1:], activation='relu'))
 model.add(MaxPooling2D(pool_size=(2,2)))
@@ -134,59 +134,92 @@ model.add(Flatten())
 model.add(Dense(256, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(nb_classes, activation='softmax'))
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+# 학습 방식 환경 설정
+# optimizer: 훈련과정 설정, 최적화 알고리즘 설정
+# loss: 모델 최적화 목적 함수
+# metrics: 훈련을 모니터링 하기 위해 사용/ accuracy: 분류에 사용
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'], run_eagerly=True)
 model_dir = './model'
 
+# 폴더가 존재하지 않으면
 if not os.path.exists(model_dir):
+    # model_dir 이름의 폴더 생성
     os.mkdir(model_dir)
 
+# 모델 경로 지정
 model_path = model_dir + '/multi_img_classification.model'
+# 콜백 함수
+# verbose: 해당 함수의 진행 사항의 출력 여부
+# save_best_only: 모델의 정확도가 최고값을 갱신했을 때만 저장
 checkpoint = ModelCheckpoint(filepath=model_path , monitor='val_loss', verbose=1, save_best_only=True)
+# overfitting 방지
 early_stopping = EarlyStopping(monitor='val_loss', patience=6)
 
 model.summary()
 
+# 모델 학습(실행)
 history = model.fit(X_train, Y_train, batch_size=32, epochs=50, validation_data=(X_test, Y_test), callbacks=[checkpoint, early_stopping])
-
+# evaluate: 모델에 대한 정확도 평가
+# X_test: 테스트 데이터/ Y_test: 지도 학습에서 '레이블 테스트 데이터'
 print("정확도 : %.4f" % (model.evaluate(X_test, Y_test)[1]))
 
-
+# validation_data_set과 training_data_set의 오차를 저장
 Y_vloss = history.history['val_loss']
 Y_loss = history.history['loss']
 
+# 그래프로 표현
 x_len = np.arange(len(Y_loss))
 
 plt.plot(x_len, Y_vloss, marker='.', c='red', label='val_set_loss')
 plt.plot(x_len, Y_loss, marker='.', c='blue', label='train_set_loss')
+
+# 그리드, 레이블 표시
 plt.legend()
 plt.xlabel('epochs')
 plt.ylabel('loss')
 plt.grid()
 plt.show()
 
+# Keras 모델을 저장하고 불러오는 라이브러리
 from keras.models import load_model
+tf.data.experimental.enable_debug_mode()
 
+# test data set 불러오기
 data_dir = "C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/2023_OSSP_Data/Test"
 image_w = 64
 image_h = 64
 
+# 데이터와 파일 이름을 저장할 리스트
 X = []
 filenames = []
-files = glob.glob(image_dir+"/*.jpg")
-for i, f in enumerate(files):
-    img = Image.open(f)
-    img = img.convert("RGB")
-    img = img.resize((image_w, image_h))
-    data = np.asarray(img)
-    filenames.append(f)
-    X.append(data)
 
+# 이미지 전처리 2 -> 위의 코드와 동일
+for idx, cat in enumerate(categories):
+    label = [0 for i in range(nb_classes)]
+    label[idx] = 1
+
+    image_dir = data_dir + "/" + cat
+    files = glob.glob(image_dir + "/*.jpg")
+
+    for i, f in enumerate(files):
+        img = Image.open(f)
+        img = img.convert("RGB")
+        img = img.resize((image_w, image_h))
+        data = np.asarray(img)
+        filenames.append(f)
+        X.append(data)
+
+# 데이터 리스트를 배열로 전환
 X = np.array(X)
+# 모델 불러오기
 model = load_model('./model/multi_img_classification.model')
 
+# 테스트 데이터 X에 대해 예측하기
 prediction = model.predict(X)
+# numpy float 출력 옵션 변경
 np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 cnt = 0
+
 
 for i in prediction:
     pre_ans = i.argmax()  # 예측 레이블
