@@ -20,7 +20,7 @@
 
 6. 인식한 이미지를 바탕으로 음성 출력 코드 추가하기
 
-+ image augmentation 코드 추가하기
+➕ image augmentation 코드 추가하기
 
 
 ## 프로젝트 과정 기록
