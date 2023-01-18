@@ -1,0 +1,13 @@
+train: C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/train.txt
+val: C:/Users/rmsdu/OneDrive/문서/GitHub/2023_OSSP/val.txt
+
+nc: 6
+
+names: [
+'coca',
+'fanta',
+'letsbee',
+'pocari',
+'sprite',
+'tejava'
+]
